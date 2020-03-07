@@ -4,7 +4,7 @@
   "description": "Converts numbers to an alphabet format",
   "main": "index.js",
   "scripts": {
-    "test": "node test.js"
+    "test": "tap"
   },
   "repository": {
     "type": "git",
