@@ -1,6 +1,10 @@
 const englishAlphabet = 'abcdefghijklmnopqrstuvwxyz';
 
 function alphanumerize(numeral) {
+  const num = Number(numeral);
+  if (typeof num !== 'number' || Number.isNaN(num)) {
+    throw new Error();
+  }
   let prevRemainder;
   const processedAlphabet = englishAlphabet[englishAlphabet.length - 1] + englishAlphabet;
   let alphabetized = '';

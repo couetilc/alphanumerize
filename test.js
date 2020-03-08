@@ -1,7 +1,7 @@
 import tap from 'tap';
 import alphanumerize from '.';
 
-tap.test('alphabetizes numbers', async (t) => {
+tap.test('alphanumerizes numbers', (t) => {
   const testCases = Object.entries({
     0: '',
     1: 'a',
@@ -18,11 +18,61 @@ tap.test('alphabetizes numbers', async (t) => {
   });
 
   testCases.forEach(([input, output]) => {
-    const alphabetized = alphanumerize(input);
+    const alpha = alphanumerize(Number(input));
     t.equal(
-      alphabetized,
+      alpha,
       output,
-      `alphanumerize(${input}) should equal ${output}, NOT ${alphabetized}`,
+      `alphanumerize(${input}) should equal ${output}, NOT ${alpha}`,
     );
   });
+
+  t.done();
+});
+
+tap.test('alphanumerizes number-like data', (t) => {
+  const testCases = [
+    [true, 'a'], // 1
+    [false, ''], // 0
+    [null, ''], // 0
+    ['', ''], // 0
+    ['1', 'a'], // 1
+    [[], ''], // 0
+    [[1], 'a'], // 1
+    [[[1]], 'a'], // 1
+  ];
+
+  testCases.forEach(([input, output]) => {
+    let alpha;
+    t.doesNotThrow(
+      () => { alpha = alphanumerize(input); },
+      `should not throw when passed number-like value "${input}"`,
+    );
+    t.strictEqual(
+      alpha,
+      output,
+      `should alphabetize number-like data ${input}`,
+    );
+  });
+
+  t.done();
+});
+
+tap.test('throws error when alphabetizing a non-number', (t) => {
+  const testCases = [
+    undefined, // NaN
+    Symbol(''), // TypeError
+    {}, // NaN
+    () => '', // NaN
+    [0, 1], // NaN
+  ];
+
+  testCases.forEach((value) => {
+    t.throws(
+      () => alphanumerize(value),
+      Error,
+      `should throw when passed a ${typeof value}`,
+    );
+  });
+
+  t.done();
 });
