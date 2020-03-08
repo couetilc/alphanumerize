@@ -13,3 +13,18 @@ For example (default behavior):
 | 26 | 'z' |
 | 27 | 'aa' |
 | 28 | 'ab' |
+
+## TODO
+
+1. benchmarking
+  - node
+  - browser
+1. githooks
+  - npm prepare githooks
+  - lint checks
+  - test check
+  - append benchmark to the end of commit messages
+1. more features
+  - negative numbers , 'z', 'y', ... , 'zz', 'zy', ...
+  - custom alphabet
+  - capitalize, lowercase (invert case when both are true, do nothing when both are false)
