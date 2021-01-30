@@ -1,6 +1,54 @@
 import tap from 'tap';
 import alphanumerize from '.';
 
+const englishAlphabet = 'abcdefghijklmnopqrstuvwxyz';
+
+function equation(alphabet) {
+  const processedAlphabet = alphabet[alphabet.length - 1] + alphabet;
+  const eq = [0];
+  let value;
+  let alpha;
+
+  return {
+    getNumber: () => {
+      // if cached
+      if (value) { return value; }
+      // else recompute
+      value = 0;
+      for (let n = 0; n < eq.length; n += 1) {
+        value += (processedAlphabet.length ** n) * eq[n];
+      }
+      return value;
+    },
+    getAlpha: () => {
+      // if cached
+      if (alpha) { return alpha; }
+      // else recompute
+      alpha = '';
+      for (let n = 0; n < eq.length; n += 1) {
+        alpha = processedAlphabet[eq[n]] + alpha;
+      }
+      return alpha;
+    },
+    next: () => {
+      value = undefined; alpha = undefined;
+      for (let n = 0; n < eq.length; n += 1) {
+        if (eq[n] >= alphabet.length) {
+          if (!eq[n + 1]) {
+            eq.push(0);
+          }
+          eq[n + 1] += eq[n] - alphabet.length;
+          eq[n] = 1;
+        } else {
+          eq[n] += 1;
+          break;
+        }
+      }
+      return eq;
+    },
+  };
+}
+
 tap.test('alphanumerizes numbers', (t) => {
   const testCases = Object.entries({
     0: '',
@@ -76,3 +124,40 @@ tap.test('throws error when alphabetizing a non-number', (t) => {
 
   t.done();
 });
+
+tap.test('alphanumerizes many automatically generated numbers', (t) => {
+  const eq = equation(englishAlphabet);
+  for (let n = 0; n < 100; n += 1) {
+    eq.next();
+    const alphanumerized = alphanumerize(eq.getNumber());
+    console.log('[ %O: %O ] => %O alphanumerized(%O)', eq.getNumber(), eq.getAlpha(), alphanumerized, eq.getNumber());
+    // t.equal(
+    //   alphanumerized,
+    //   eq.getAlpha(),
+    //   `failed for alphanumerize(${eq.getNumber()})`,
+    // );
+  }
+
+  t.done();
+});
+
+const base8 = [
+  '',
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+  'aa', 'ab', 'ac', 'ad', 'ae', 'af', 'ag', 'ah',
+  'ba'
+]
+
+const base10 = [
+  '',
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+  'aa', 'ab', 'ac', 'ad', 'ae', 'af', 'ag', 'ah', 'ai', 'aj',
+  'ba'
+]
+
+const base26 = [
+  '',
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+  'aa', 'ab', 'ac', 'ad', 'ae', 'af', 'ag', 'ah', 'ai', 'aj', 'ak', 'al', 'am', 'an', 'ao', 'ap', 'aq', 'ar', 'as', 'at', 'au', 'av', 'aw', 'ax', 'ay', 'az',
+  'ba'
+]

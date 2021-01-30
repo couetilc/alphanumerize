@@ -19,6 +19,7 @@ For example (default behavior):
 1. benchmarking
   - node
   - browser
+  - regression test benchmarks through git commit history to create a graph
 1. githooks
   - npm prepare githooks
   - lint checks

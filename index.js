@@ -1,5 +1,6 @@
 const englishAlphabet = 'abcdefghijklmnopqrstuvwxyz';
 
+// TODO: negatives? maybe handle in different ways? like negative sign indicator OR two's complement
 function alphanumerize(numeral) {
   const num = Number(numeral);
   if (typeof num !== 'number' || Number.isNaN(num)) {
@@ -30,4 +31,4 @@ function alphanumerize(numeral) {
   return alphabetized;
 }
 
-export default alphanumerize;
+module.exports = alphanumerize;
