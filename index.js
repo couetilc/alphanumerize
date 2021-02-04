@@ -14,13 +14,14 @@ function alphanumerize(num, options = {}) {
     num *= -1;
     alphanumerals += '-';
   }
+  // determine numeral sequence
   const base = alphabet.length;
   const sequenceLength = Math.ceil(Math.log(1 - num / base + num) / Math.log(base));
   for (let i = sequenceLength; i > 1; i -= 1) {
-    const j = i - 1;
-    const digit = Math.ceil((num) / (base ** j)) - 1;
+    const power = base ** (i - 1);
+    const digit = Math.ceil(num / power) - 1;
     alphanumerals += alphabet[digit - 1];
-    num -= digit * (base ** j); // calculate remainder
+    num -= digit * power; // calculate remainder
   }
   alphanumerals += alphabet[num - 1];
   return alphanumerals;
