@@ -27,8 +27,7 @@ function alphanumerize(defaultOptions, num, options = defaultOptions) {
   return alphanumerals;
 }
 
-function createInstance(options) {
-  if (!options) throw new Error('must pass options argument to createInstance');
+function createInstance(options = {}) {
   const instance = alphanumerize.bind(null, options);
   Object.defineProperty(instance, 'alphabet', { value: options.alphabet });
   return instance;

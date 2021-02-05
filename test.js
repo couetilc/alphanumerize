@@ -28,18 +28,14 @@ const base26 = [
 const log = (...arg) => console.log(...arg);
 
 function test(name, fn) {
-  let failed = false;
   let error;
   try {
     fn();
   } catch (e) {
-    failed = true;
     error = e;
   }
-  log(`${name}...${failed ? '❌' : '✅'}`);
-  if (failed) {
-    log(error);
-  }
+  log(`${name}...${error ? '❌' : '✅'}`);
+  if (error) log(error);
 }
 
 test('base 8 english alphabet', () => {

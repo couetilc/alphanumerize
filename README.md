@@ -90,7 +90,7 @@ for a digit `d_i` is `m`, remember? Therefore in math speak, the bounds for
 
 Can we use this relation to find the length `S` of the sequence? Yes! Remember that the sum of a geometric progression is described by a simple equation (thanks Knuth!):
 
-<img src="https://latex.codecogs.com/png.latex?\sum_{0&space;\leq&space;j&space;\leq&space;n}&space;ax^i&space;=&space;a(\frac{1&space;-&space;x^{n&plus;1}}{1-x})" title="\sum_{0 \leq j \leq n} ax^i = a(\frac{1 - x^{n+1}}{1-x})" />
+<img src="https://latex.codecogs.com/png.latex?\sum_{1&space;\leq&space;i&space;\leq&space;S-1}&space;ax^i&space;=&space;a(\frac{1&space;-&space;x^{n&plus;1}}{1-x})" title="\sum_{0 \leq j \leq n} ax^i = a(\frac{1 - x^{n+1}}{1-x})" />
 
 Therefore, if we take `j = i - 1` we rewrite the inequality to
 
