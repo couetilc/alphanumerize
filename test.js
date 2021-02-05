@@ -2,12 +2,7 @@
 const assert = require('assert');
 const alphanumerize = require('./index.js');
 
-// TODO test for 0 returns ''
-// TODO test for non-numbers returns ''
-// TODO test for negative numbers
-// TODO test for num=options returns alphanumerize function
 // TODO test for very big sequences, like bigint size
-// TODO test that exposes alphabet currently used by function
 
 const base8 = [
   'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
@@ -102,11 +97,21 @@ test('exposes the current alphabet', () => {
   assert.strictEqual(alphanumerize.alphabet, 'abcdefghijklmnopqrstuvwxyz');
 });
 
-test('returns a function with preset alphabet', () => {
-  const alpha = alphanumerize(base8.options);
-  assert.strictEqual(alpha.alphabet, base8.options.alphabet);
+test('can return a function with preset alphabet', () => {
+  const instance = alphanumerize(base8.options);
+  assert.strictEqual(instance.alphabet, base8.options.alphabet);
   base8.forEach((alphanumeral, i) => {
     const num = i + 1;
-    assert.strictEqual(alpha(num), alphanumeral);
+    assert.strictEqual(instance(num), alphanumeral);
   });
+});
+
+test('cannot modify preset alphabet', () => {
+  // module object
+  alphanumerize.alphabet = '123';
+  assert.strictEqual(alphanumerize.alphabet, 'abcdefghijklmnopqrstuvwxyz');
+  // instance object
+  const instance = alphanumerize({ alphabet: 'abc' });
+  instance.alphabet = 'xyz';
+  assert.strictEqual(instance.alphabet, 'abc');
 });

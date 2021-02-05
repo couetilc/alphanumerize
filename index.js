@@ -2,35 +2,19 @@
 /* eslint-disable no-param-reassign */
 const englishAlphabet = 'abcdefghijklmnopqrstuvwxyz';
 
-function alphanumerize(num, options = {}) {
-  const { alphabet = alphanumerize.alphabet } = options;
+function alphanumerize(defaultOptions, num, options = defaultOptions) {
   // if num is options object, return a function with the alphabet preset
-  if (typeof num === 'object' && num !== null) {
-    return new Proxy(alphanumerize, {
-      get: (...args) => {
-        const [, prop] = args;
-        if (prop === 'alphabet') {
-          return num.alphabet;
-        }
-        return Reflect.get(...args);
-      },
-      apply: (target, thisArg, argumentsList) => {
-        target.alphabet = num.alphabet;
-        return target(...argumentsList);
-      },
-    });
-  }
+  if (typeof num === 'object' && num !== null) return createInstance(num);
   // conditions for an empty numeral sequence
-  if (typeof num !== 'number' || num === 0) {
-    return '';
-  }
-  let alphanumerals = '';
+  if (typeof num !== 'number' || num === 0) return '';
   // numeral sequences for negative numbers will start with a negative sign
+  let alphanumerals = '';
   if (num < 0) {
     num *= -1;
     alphanumerals += '-';
   }
   // determine numeral sequence
+  const { alphabet } = options;
   const base = alphabet.length;
   const sequenceLength = Math.ceil(Math.log(1 - num / base + num) / Math.log(base));
   for (let i = sequenceLength; i > 1; i -= 1) {
@@ -43,6 +27,11 @@ function alphanumerize(num, options = {}) {
   return alphanumerals;
 }
 
-alphanumerize.alphabet = englishAlphabet;
+function createInstance(options) {
+  if (!options) throw new Error('must pass options argument to createInstance');
+  const instance = alphanumerize.bind(null, options);
+  Object.defineProperty(instance, 'alphabet', { value: options.alphabet });
+  return instance;
+}
 
-module.exports = alphanumerize;
+module.exports = createInstance({ alphabet: englishAlphabet });
