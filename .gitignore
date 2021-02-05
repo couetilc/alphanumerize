@@ -1,5 +1,6 @@
 # tests
 .nyc_output
+coverage
 
 # linting
 .eslintcache
