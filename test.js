@@ -27,6 +27,8 @@ const base26 = [
 // eslint-disable-next-line no-console
 const log = (...arg) => console.log(...arg);
 
+let failed;
+
 function test(name, fn) {
   let error;
   try {
@@ -35,7 +37,10 @@ function test(name, fn) {
     error = e;
   }
   log(`${name}...${error ? '❌' : '✅'}`);
-  if (error) log(error);
+  if (error) {
+    log(error);
+    failed = true;
+  }
 }
 
 test('base 8 english alphabet', () => {
@@ -111,3 +116,7 @@ test('cannot modify preset alphabet', () => {
   instance.alphabet = 'xyz';
   assert.strictEqual(instance.alphabet, 'abc');
 });
+
+if (failed) {
+  process.exit(1);
+}
