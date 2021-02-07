@@ -1,157 +1,90 @@
 /* eslint-disable no-console */
-const Benchmark = require('benchmark');
-const alphanumerize = require('.');
+/* eslint-disable lines-between-class-members */
+/* eslint-disable camelcase */
+/* eslint-disable comma-dangle */
+/* eslint-disable max-classes-per-file */
+const { performance } = require('perf_hooks');
+const alphanumerize = require('./index.js');
 
-const reportOne = (bench, log = console.log) => {
-  log(`========================================================
-  Run "${bench.name}"
---------------------------------------------------------
-    number of function calls: ${'TODO'}
-  average run time (seconds): ${bench.stats.mean}
-standard deviation (seconds): ${bench.stats.deviation}
-   margin of error (seconds): ${bench.stats.moe}
-relative margin of error (%): ${bench.stats.rme}
-           number of samples: ${bench.stats.sample.length} (${bench.times.elapsed}s elapsed)
-`);
-};
+// TODO take samples, calculating mean , variance, 90 95 99
+// confidence boundaries
 
-const report = (benches, log = console.log) => benches.forEach((bench) => {
-  log(`========================================================
-  Run "${bench.name}"
---------------------------------------------------------
-    number of function calls: ${'TODO'}
-  average run time (seconds): ${bench.stats.mean}
-standard deviation (seconds): ${bench.stats.deviation}
-   margin of error (seconds): ${bench.stats.moe}
-relative margin of error (%): ${bench.stats.rme}
-           number of samples: ${bench.stats.sample.length} (${bench.times.elapsed}s elapsed)
-`);
-});
+// TODO make a writeup about the average and variance calculations?
+// - prob need to do an inductive proof
 
-const englishAlphabet = 'abcdefghijklmnopqrstuvwxyz';
-function equation(alphabet) {
-  const processedAlphabet = alphabet[alphabet.length - 1] + alphabet;
-  const eq = [0];
-  let value;
-  let alpha;
+// TODO the first time measurement skews the result, maybe throw it away?
+// - effect is 100x greater
+// how do other people handle the first measurement skew? is it significant?
+// I can ask, how much bigger was the first measurement than the subsequent average?
 
-  return {
-    getNumber: () => {
-      // if cached
-      if (value) { return value; }
-      // else recompute
-      value = 0;
-      for (let n = 0; n < eq.length; n += 1) {
-        value += (processedAlphabet.length ** n) * eq[n];
-      }
-      return value;
-    },
-    getAlpha: () => {
-      // if cached
-      if (alpha) { return alpha; }
-      // else recompute
-      alpha = '';
-      for (let n = 0; n < eq.length; n += 1) {
-        alpha = processedAlphabet[eq[n]] + alpha;
-      }
-      return alpha;
-    },
-    next: () => {
-      value = undefined; alpha = undefined;
-      for (let n = 0; n < eq.length; n += 1) {
-        if (eq[n] >= alphabet.length) {
-          if (!eq[n + 1]) {
-            eq.push(0);
-          }
-          eq[n + 1] += eq[n] - alphabet.length;
-          eq[n] = 1;
-        } else {
-          eq[n] += 1;
-          break;
-        }
-      }
-      return eq;
-    },
-  };
+class Timer {
+  constructor() {
+    this.value = null;
+  }
+  start() {
+    this.value = performance.now();
+  }
+  end() {
+    this.value = performance.now() - this.value;
+  }
+  reset() {
+    this.value = null;
+  }
 }
 
+class Stats {
+  constructor() {
+    this.count = 0;
+    this.average = null;
+    this.sum_of_squares = 0;
+    this.square_of_sums = 0;
+    this.sigma = 0;
+  }
+  add(sample) {
+    this.count += 1;
+    this.average = this.average * ((this.count - 1) / this.count) + sample / this.count;
+    this.sum_of_squares = (this.sum_of_squares * (this.count - 1) + sample ** 2) / this.count;
+    this.square_of_sums = (
+      Math.sqrt(this.square_of_sums) * ((this.count - 1) / (this.count + 1))
+      + Math.sqrt((sample ** 2) / (this.count * (this.count + 1)))
+    ) ** 2;
+    this.variance = this.sum_of_squares - this.square_of_sums;
+    this.sigma = Math.sqrt(this.variance);
+    this.std_dev = this.sigma;
+  }
+}
 
-const benchmark = new Benchmark(
-  'alphanumerize(100000)',
-  () => {
-    const eq = equation(englishAlphabet);
-    for (let i = 0; i < Number.MAX_SAFE_INTEGER; i += 1) {
-      eq.next();
-      alphanumerize(eq.getNumber());
-    }
-    console.log('alpha %O', eq.getAlpha());
-  },
-  {
-    // onComplete function is passed an object "Event" which has a "target"
-    // property referring to the benchmark instance.
-    onComplete: ({ target: bench }) => reportOne(bench),
-  },
-);
+function benchmark({ name, iterations = 100, fn }) {
+  const timer = new Timer();
+  const stats = new Stats();
 
-benchmark.run();
+  fn(timer);
+  const cold_start = timer.value;
+  timer.reset();
 
+  for (let i = 0; i < iterations; i += 1) {
+    fn(timer);
+    stats.add(timer.value);
+    timer.reset();
+  }
 
+  const { average, std_dev } = stats;
+  const speedup = cold_start / average;
 
+  console.log(
+    '%o...bench %o ms ±%o (%o times faster than cold start)',
+    name, average, std_dev, speedup
+  );
 
+  return [average, std_dev, speedup];
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-// const e = equation(englishAlphabet);
-// for (let x = 0; x < 53; x += 1) {
-//   console.log('%O = %O (%O)', e.next(), e.getNumber(), e.getAlpha());
-// }
-
-// const eq = equation(englishAlphabet);
-
-// const b = new Benchmark(
-//   'linearTest',
-//   () => alphanumerize(eq.getNumber()),
-//   {
-//     setup: function () { console.log('setup'); },
-//     fn: function () { console.log('testsetesteseest'); },
-//     onCycle: function () { eq.next(); },
-//     teardown: function () { console.log('test case %O (%O)', eq.getNumber(), eq.getAlpha()); },
-//     onComplete: function () { report(Array.isArray(b) ? b : [b]); },
-//   },
-// );
-
-// const b = new benchmark.Suite();
-
-// b
-//   .add('linearTest', () => alphanumerize(eq.getNumber()))
-//   .on('cycle', () => eq.next())
-//   .teardown(() => console.log('val %O (%O)', eq.getNumber(), eq.getAlpha()))
-//   .on('complete', () => report(b))
-//   .run()
-//   ;
-
-
-// b.run();
-
-// const b = new benchmark.Suite();
-
-// b
-//   .add('alphanumerize(1)', fn)
-//   .add('alphanumerize(100)', () => alphanumerize(100))
-//   .add('alphanumerize(10000)', () => alphanumerize(10000))
-//   .add('alphanumerize(1000000)', () => alphanumerize(1000000))
-//   .add('alphanumerize(100000000)', () => alphanumerize(100000000))
-//   .add('alphanumerize(10000000000)', () => alphanumerize(10000000000))
-//   .add('alphanumerize(1000000000000)', () => alphanumerize(1000000000000))
-//   .on('complete', () => report(b))
-//   .run();
+benchmark({
+  name: 'timer',
+  iterations: 5,
+  fn: (timer) => {
+    timer.start();
+    alphanumerize(2);
+    timer.end();
+  }
+});
