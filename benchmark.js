@@ -6,16 +6,11 @@
 const { performance } = require('perf_hooks');
 const alphanumerize = require('./index.js');
 
-// TODO take samples, calculating mean , variance, 90 95 99
-// confidence boundaries
-
 // TODO make a writeup about the average and variance calculations?
 // - prob need to do an inductive proof
 
 // TODO the first time measurement skews the result, maybe throw it away?
-// - effect is 100x greater
 // how do other people handle the first measurement skew? is it significant?
-// I can ask, how much bigger was the first measurement than the subsequent average?
 
 class Timer {
   constructor() {
@@ -38,7 +33,6 @@ class Stats {
     this.average = null;
     this.sum_of_squares = 0;
     this.square_of_sums = 0;
-    this.sigma = 0;
   }
   add(sample) {
     this.count += 1;

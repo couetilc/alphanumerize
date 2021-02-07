@@ -2,7 +2,7 @@
 /* eslint-disable no-param-reassign */
 const englishAlphabet = 'abcdefghijklmnopqrstuvwxyz';
 
-function alphanumerize(defaultOptions, num, options = defaultOptions) {
+function alphanumerize(num, options = this.options) {
   // if num is options object, return a function with the alphabet preset
   if (typeof num === 'object' && num !== null) return createInstance(num);
   // conditions for an empty numeral sequence
@@ -28,7 +28,7 @@ function alphanumerize(defaultOptions, num, options = defaultOptions) {
 }
 
 function createInstance(options = {}) {
-  const instance = alphanumerize.bind(null, options);
+  const instance = alphanumerize.bind({ options });
   Object.defineProperty(instance, 'alphabet', { value: options.alphabet });
   return instance;
 }
