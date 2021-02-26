@@ -4,9 +4,9 @@
   "description": "Converts numbers to an alphabet format",
   "main": "index.js",
   "scripts": {
-    "test": "c8 node test.js",
-    "lint": "eslint . --ext .js --cache",
-    "lintAll": "eslint . --ext .js"
+    "test": "npm run lint && npm run coverage",
+    "coverage": "c8 node test.js",
+    "lint": "eslint . --ext .js"
   },
   "repository": {
     "type": "git",
@@ -28,12 +28,10 @@
   },
   "homepage": "https://github.com/couetilc/alphanumerize#readme",
   "devDependencies": {
-    "benchmark": "^2.1.4",
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-plugin-import": "^2.20.1"
+    "c8": "^7.6.0",
+    "eslint": "^7.20.0",
+    "eslint-config-cc-lint": "^1.1.0",
+    "eslint-plugin-node": "^11.1.0"
   },
-  "dependencies": {
-    "c8": "^7.5.0"
-  }
+  "dependencies": {}
 }

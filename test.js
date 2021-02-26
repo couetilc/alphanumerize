@@ -1,4 +1,3 @@
-/* eslint-disable arrow-parens */
 const assert = require('assert');
 const alphanumerize = require('./index.js');
 
@@ -76,7 +75,8 @@ test('the number zero', () => {
 });
 
 test('not a numeral sequence', () => {
-  [true, false, 'abc', Symbol(0), null, undefined, () => null]
+  let undef;
+  [true, false, 'abc', Symbol(0), null, undef, () => null]
     .forEach(emptyCase => {
       assert.strictEqual(alphanumerize(emptyCase), '',
         `failed on input ${JSON.stringify(emptyCase)}`);

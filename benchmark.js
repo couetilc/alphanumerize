@@ -1,8 +1,3 @@
-/* eslint-disable no-console */
-/* eslint-disable lines-between-class-members */
-/* eslint-disable camelcase */
-/* eslint-disable comma-dangle */
-/* eslint-disable max-classes-per-file */
 const { performance } = require('perf_hooks');
 const alphanumerize = require('./index.js');
 
@@ -65,6 +60,7 @@ function benchmark({ name, iterations = 100, fn }) {
   const { average, std_dev } = stats;
   const speedup = cold_start / average;
 
+  // eslint-disable-next-line no-console
   console.log(
     '%o...bench %o ms ±%o (%o times faster than cold start)',
     name, average, std_dev, speedup
