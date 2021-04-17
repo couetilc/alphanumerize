@@ -33,6 +33,7 @@ jobs:
     if: github.event_name == 'release' && github.event.action == 'published'
     needs: test
     runs-on: ubuntu-latest
+    steps:
 
       - name: Checkout
         uses: actions/checkout@v2
